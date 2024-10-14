@@ -35,25 +35,32 @@ void RPN::calculate(Operation oper)
 {
 	if (this->size() < 2)
 	{
-		throw std::logic_error("Error");
+		throw std::logic_error("Error: Not enough operands");
 	}
-	int v1;
-	int v2;
+	int v2 = this->top();
+	this->pop();
+	int v1 = this->top();
+	this->pop();
 
-	int (RPN::*operation[4])(int, int) = {&RPN::add, &RPN::substract, &RPN::multiply, &RPN::divide};
-	char operations[5] = "+-*/";
-	v2 = this->top();
-	this->pop();
-	v1 = this->top();
-	this->pop();
-	for (int i = 0; i < 5; ++i)
+	int result;
+	switch (oper)
 	{
-		if (operations[i] == oper)
-		{
-			(this->*(operation[i]))(v1, v2);
-			break;
-		}
+	case ADD:
+		result = this->add(v1, v2);
+		break;
+	case SUB:
+		result = this->substract(v1, v2);
+		break;
+	case MUL:
+		result = this->multiply(v1, v2);
+		break;
+	case DIV:
+		result = this->divide(v1, v2);
+		break;
+	default:
+		throw std::invalid_argument("Error: Invalid operator");
 	}
+	this->push(result);
 }
 
 void RPN::add(char entry)
@@ -71,24 +78,44 @@ void RPN::add(char entry)
 
 int RPN::add(int v1, int v2)
 {
-	this->push(v1 + v2);
+	if ((v2 > 0 && v1 > INT_MAX - v2) || (v2 < 0 && v1 < INT_MIN - v2))
+	{
+		throw std::runtime_error("Error: Integer overflow");
+	}
 	return v1 + v2;
 }
 
 int RPN::substract(int v1, int v2)
 {
-	this->push(v1 - v2);
+	if ((v2 < 0 && v1 > INT_MAX + v2) || (v2 > 0 && v1 < INT_MIN + v2))
+	{
+		throw std::runtime_error("Error: Integer overflow");
+	}
 	return v1 - v2;
 }
 
 int RPN::multiply(int v1, int v2)
 {
-	this->push(v1 * v2);
+	if (v1 > 0 && v2 > 0 && v1 > INT_MAX / v2)
+		throw std::runtime_error("Error: Integer overflow");
+	if (v1 > 0 && v2 < 0 && v2 < INT_MIN / v1)
+		throw std::runtime_error("Error: Integer overflow");
+	if (v1 < 0 && v2 > 0 && v1 < INT_MIN / v2)
+		throw std::runtime_error("Error: Integer overflow");
+	if (v1 < 0 && v2 < 0 && v1 < INT_MAX / v2)
+		throw std::runtime_error("Error: Integer overflow");
 	return v1 * v2;
 }
 
 int RPN::divide(int v1, int v2)
 {
-	this->push(v1 / v2);
+	if (v2 == 0)
+	{
+		throw std::runtime_error("Error: Division by zero");
+	}
+	if (v1 == INT_MIN && v2 == -1)
+	{
+		throw std::runtime_error("Error: Integer overflow");
+	}
 	return v1 / v2;
 }

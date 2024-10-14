@@ -36,37 +36,49 @@ int divide(int v1, int v2)
 
 int main(int argc, char *argv[])
 {
-	RPN int_storage;
-	std::string equation;
-
-	if (argc < 2)
+	if (argc != 2 || std::string(argv[1]).empty())
 	{
-		std::cout << "Program requires input" << std::endl;
-		return 0;
+		std::cerr << "Error: Program requires exactly one non-empty argument" << std::endl;
+		return 1;
 	}
-	equation = argv[1];
+
+	RPN rpn;
+	std::string input(argv[1]);
+	std::istringstream iss(input);
+	std::string token;
+
 	try
 	{
-		for (size_t i = 0; i < equation.size(); ++i)
+		while (iss >> token)
 		{
-			if (equation[i] == ADD || equation[i] == SUB || equation[i] == DIV || equation[i] == MUL)
+			if (token == "+" || token == "-" || token == "*" || token == "/")
 			{
-				int_storage.calculate((Operation)equation[i]);
+				rpn.calculate(static_cast<Operation>(token[0]));
 			}
-			else if (equation[i] != ' ')
+			else
 			{
-				int_storage.add(equation[i]);
+				int value;
+				std::istringstream tokenStream(token);
+				if (!(tokenStream >> value) || !tokenStream.eof() || value < 0 || value > 9)
+				{
+					throw std::invalid_argument("Error: Invalid number");
+				}
+				rpn.push(value);
 			}
 		}
-		std::cout << int_storage.top() << std::endl;
+
+		if (rpn.size() != 1)
+		{
+			throw std::logic_error("Error: Invalid expression");
+		}
+
+		std::cout << rpn.top() << std::endl;
 	}
-	catch (std::invalid_argument &e)
+	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 1;
 	}
-	catch (std::logic_error &e)
-	{
-		std::cerr << e.what() << std::endl;
-	}
+
 	return 0;
 }
