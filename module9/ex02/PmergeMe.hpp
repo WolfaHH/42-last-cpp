@@ -1,77 +1,38 @@
 #ifndef PMERGEME_HPP
 #define PMERGEME_HPP
-
 #include <vector>
-#include <list>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <ostream>
+#include <utility>
+#include <deque> 
 
-template <typename Container>
-bool find_duplicate(const Container &nums, int new_value)
-{
-	for (typename Container::const_iterator it = nums.begin(); it != nums.end(); ++it)
-	{
-		if (*it == new_value)
-			return true;
-	}
-	return false;
-}
+//A.cpp
+int				 oprint(std::string str);
+bool			 invalid_number(std::string str);
+bool			 av_check(char **av);
+void			 generate(std::vector<int> & mVec, char **av);
+void			 mVecPrint(std::vector<std::pair<int, int> > mVec);
 
-template <typename Container>
-void mergeInsertSort(Container &nums)
-{
-	if (nums.size() <= 1)
-		return;
 
-	Container left(nums.begin(), nums.begin() + nums.size() / 2);
-	Container right(nums.begin() + nums.size() / 2, nums.end());
+void			 mVecPrint(std::vector<std::pair<int, int> > mVec);
+void			 generate(std::vector<int> & mVec, char **av);
+void			mmerge(std::vector<std::pair<int, int> > & mVec);
+void			set_pair_uper(std::vector<std::pair<int, int> > & mVec, std::vector<std::pair<int, int> > & uper);
+void			change_pair_lower(std::vector<std::pair<int, int> > &uper, std::vector<std::pair <int, int> > &lower);
+void			minsert(std::vector<std::pair<int, int> > &uper, std::vector<std::pair<int, int> > &lower);
+void			binary_sort(std::vector<std::pair<int, int> >&uper, std::pair<int, int> &lower,
+					unsigned int start, unsigned int end);
+unsigned int	jacob_gen(int check, std::vector<std::pair<int, int> > &lower);
 
-	mergeInsertSort(left);
-	mergeInsertSort(right);
-
-	typename Container::iterator leftIt = left.begin();
-	typename Container::iterator rightIt = right.begin();
-	typename Container::iterator numsIt = nums.begin();
-
-	while (leftIt != left.end() && rightIt != right.end())
-	{
-		if (*leftIt < *rightIt)
-			*numsIt++ = *leftIt++;
-		else
-			*numsIt++ = *rightIt++;
-	}
-
-	while (leftIt != left.end())
-	{
-		*numsIt++ = *leftIt++;
-	}
-	while (rightIt != right.end())
-	{
-		*numsIt++ = *rightIt++;
-	}
-}
-
-template <typename Container>
-Container build_container(const char **args)
-{
-	Container container;
-	for (int i = 0; args[i]; ++i)
-	{
-		int entry;
-		std::stringstream ss(args[i]);
-		ss >> entry;
-		if (ss.fail())
-			throw 42;
-		if (find_duplicate(container, entry) || entry < 0)
-			throw 41;
-		container.push_back(entry);
-	}
-	return container;
-}
-
-std::ostream &operator<<(std::ostream &os, const std::vector<int> &container);
-
-std::ostream &operator<<(std::ostream &os, const std::list<int> &container);
+void			 dmVecPrint(std::deque<std::pair<int, int> > mVec);
+void			 dgenerate(std::deque<int> & mVec, char **av);
+void			dmmerge(std::deque<std::pair<int, int> > & mVec);
+void			dset_pair_uper(std::deque<std::pair<int, int> > & mVec, std::deque<std::pair<int, int> > & uper);
+void			dchange_pair_lower(std::deque<std::pair<int, int> > &uper, std::deque<std::pair <int, int> > &lower);
+void			dminsert(std::deque<std::pair<int, int> > &uper, std::deque<std::pair<int, int> > &lower);
+void			dbinary_sort(std::deque<std::pair<int, int> >&uper, std::pair<int, int> &lower,
+					unsigned int start, unsigned int end);
+unsigned int	djacob_gen(int check, std::deque<std::pair<int, int> > &lower);
 
 #endif

@@ -1,44 +1,53 @@
 #include "PmergeMe.hpp"
-#include <ctime>
-#include <time.h>
 
-int main(int argc, const char *argv[])
+int	main(int ac, char **av)
 {
-	/*containers*/
-	std::vector<int> vector_container;
-	std::list<int> list_container;
-	/*time calculations*/
-	std::clock_t start;
-	std::clock_t finish;
+	if (ac <= 2)
+		return (0);
+	if (av_check(av) == false)
+		return (1);
+	
+	std::vector<int> mVec_o;
+	generate(mVec_o, av);
+	std::vector<std::pair<int, int> > mVec;
+	for (unsigned int i = 0; i < mVec_o.size(); i++)
+		mVec.push_back(std::make_pair(mVec_o[i], i));
+	std::deque<int> dmVec_o;
+	dgenerate(dmVec_o, av);
+	std::deque<std::pair<int, int> > dmVec;
+	for (unsigned int i = 0; i < dmVec_o.size(); i++)
+		dmVec.push_back(std::make_pair(mVec_o[i], i));
 
-	if (argc < 2)
-	{
-		std::cout << "Need at least one argument for the program" << std::endl;
-		return 0;
-	}
-	try {
-		vector_container = build_container<std::vector<int> >(&argv[1]);
-	} catch (int err_code) {
-		std::cout << "Error" <<std::endl;
-		return 0;
-	}
-	std::cout << "Before: " << vector_container << std::endl;
-	mergeInsertSort(vector_container);
-	std::cout << "After: " << vector_container << std::endl;
+	time_t start, end;
 
-	/*Vector container sort*/
-	start = std::clock();
-	vector_container = build_container<std::vector<int> >(&argv[1]);
-	mergeInsertSort(vector_container);
-	finish = std::clock();
-	std::cout << "Time to process a range of 5 elements with std::vector<int>: "
-		<< (float)(finish - start)/CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
+	std::cout << "Before: ";
+	mVecPrint(mVec);
+    
+	start = clock();
+	mmerge(mVec);
+	end = clock();
+	
+	std::cout << "After: ";
+	mVecPrint(mVec);
 
-	/*list contaner sort*/
-	start = std::clock();
-	list_container = build_container<std::list<int> >(&argv[1]);
-	mergeInsertSort(vector_container);
-	finish = std::clock();
-	std::cout << "Time to process a range of 5 elements with std::list<int>: "
-		<< (float)(finish - start)/CLOCKS_PER_SEC * 1000000 << " us" << std::endl;
+	std::cout << "Time to process a range of: "
+        << mVec.size() << " elements with vector : " 
+        << (end - start) << " us" << std::endl;
+	
+	std::cout << "\n\n\n\n\n" << std::endl;
+
+	std::cout << "Before: ";
+	dmVecPrint(dmVec);
+    
+	start = clock();
+	dmmerge(dmVec);
+	end = clock();
+	
+	std::cout << "After: ";
+	dmVecPrint(dmVec);
+
+	std::cout << "Time to process a range of: "
+        << dmVec.size() << " elements with vector : " 
+        << (end - start) << " us" << std::endl;
+
 }

@@ -1,5 +1,5 @@
 CC := c++
-CPPFLAGS := -Wall -Wextra -Werror -std=c++98 -g -fno-limit-debug-info
+CPPFLAGS := -Wall -Wextra -Werror -std=c++98 -g
 TARGET := ./btc
 INCLUDES :=
 RM := rm -f

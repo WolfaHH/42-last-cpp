@@ -1,27 +1,23 @@
-CC := c++
-CPPFLAGS := -Wall -Wextra -Werror -std=c++98 -g #-fno-limit-debug-info
-TARGET := ./PmergeMe
-INCLUDES :=
-RM := rm -f
-SRC_DIR :=
-SOURCE := main.cpp PmergeMe.cpp
-SRC := $(addprefix $(SRC_DIR), $(SOURCE))
-OBJ := $(SRC:.cpp=.o)
+NAME = PmergeMe
+CXX = c++
+CXXFLAGS = -Wall -Werror -Wextra -std=c++98
+SRC = \
+	  Deque.cpp\
+	  Vector.cpp\
+	  PmergeMe.cpp\
+	  main.cpp
 
-all: $(TARGET)
+OBJS = $(SRC:.cpp=.o)
 
-$(TARGET): $(OBJ)
-	$(CC) $(CPPFLAGS) $(OBJ) -o $(TARGET)
+all: $(NAME)
 
-%.o: %.cpp
-	$(CC) $(CPPFLAGS) -c $< -o $@
-
-clean:
-	$(RM) $(OBJ)
+$(NAME): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
+	@echo "\033[34m'$(NAME)'\033[0m is ready to execute!"
+clean :
+	rm -f $(OBJS)
 
 fclean: clean
-	$(RM) $(TARGET)
+	rm -f $(NAME)
 
 re: fclean all
-
-.PHONY: all clean fclean re
